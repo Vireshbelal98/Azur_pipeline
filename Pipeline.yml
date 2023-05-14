@@ -1,0 +1,45 @@
+# Define the pipeline
+name: MyPipeline
+trigger:
+  - main
+
+# Define the stages of the pipeline
+stages:
+  - stage: Build
+    displayName: Build stage
+    jobs:
+      - job: BuildJob
+        displayName: Build job
+        pool:
+          name: MyAgentPool # Name of the agent pool to use
+        steps:
+          - script: |
+              echo "Building the code"
+              npm install
+              npm run build
+
+  - stage: Test
+    displayName: Test stage
+    dependsOn: Build
+    jobs:
+      - job: TestJob
+        displayName: Test job
+        pool:
+          name: MyAgentPool # Name of the agent pool to use
+        steps:
+          - script: |
+              echo "Running unit tests"
+              npm test
+
+  - stage: Deploy
+    displayName: Deploy stage
+    dependsOn: Test
+    jobs:
+      - job: DeployJob
+        displayName: Deploy job
+        pool:
+          name: MyAgentPool # Name of the agent pool to use
+        steps:
+          - script: |
+              echo "Deploying the application"
+              npm run deploy
